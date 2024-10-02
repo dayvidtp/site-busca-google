@@ -7,9 +7,6 @@ const Search = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const API_KEY =
-    "c8d8aad2be73c63f6542390ef67717c865542f009eebab3343e4b1329937082b";
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -17,23 +14,20 @@ const Search = () => {
       return;
     }
 
+    setError("");
     setLoading(true);
 
-    const URL = "https://serpapi.com/search.json";
-
     try {
+      const URL = "http://localhost:4000/search";
+
       const res = await axios.get(URL, {
         params: {
-          q: query,
-          engine: "google",
-          google_domain: "google.com.br",
-          api_key: API_KEY,
-          hl: "pt-br",
-          gl: "br",
-          num: 10,
+          query: query,
         },
       });
-      const data = await res.sjon();
+
+      const data = res.data.organic_results || [];
+
       setResults(data);
     } catch (err) {
       console.error(err);
@@ -59,13 +53,13 @@ const Search = () => {
         <button type="submit">Buscar</button>
       </form>
       <div>
-        <ul>
-          {error ? (
-            <h4>{error}</h4>
-          ) : loading ? (
-            <h4>Carregando...</h4>
-          ) : (
-            results.map((result, index) => {
+        {error ? (
+          <h4>{error}</h4>
+        ) : loading ? (
+          <h4>Carregando...</h4>
+        ) : (
+          <ul>
+            {results.map((result, index) => {
               return (
                 <li key={index}>
                   <a
@@ -78,9 +72,9 @@ const Search = () => {
                   <p>{result.snippet}</p>
                 </li>
               );
-            })
-          )}
-        </ul>
+            })}
+          </ul>
+        )}
       </div>
     </div>
   );
